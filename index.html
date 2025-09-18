@@ -7,17 +7,16 @@
   <title>Barrierefreiheit – Beispielseite</title>
 
   <style>
-    /* ===== Basistypografie & Design-Tokens ===== */
     :root {
       --bg: #ffffff;
       --fg: #1a1a1a;
       --muted: #444;
-      --brand: #0f62fe; /* blau */
+      --brand: #0f62fe;
       --brand-contrast: #083a9b;
-      --accent: #0fa; /* Akzent für Hinweise */
+      --accent: #0fa;
       --surface: #f6f7f8;
       --border: #d9dadd;
-      --focus: #ffbf47; /* GOV.UK-ähnlicher Fokusrahmen */
+      --focus: #ffbf47;
       --link: #0b69ff;
       --link-visited: #6f42c1;
 
@@ -29,8 +28,8 @@
       --space-6: 1.5rem;
       --space-8: 2rem;
 
-      --font-size: 18px; /* dynamisch veränderbar */
-      --maxw: 72ch;
+      --font-size: 18px;
+      --maxw: 96ch; /* Breiter gemacht */
     }
 
     [data-theme="high-contrast"] {
@@ -49,19 +48,17 @@
     html { font-size: var(--font-size); }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, Noto Sans;
       color: var(--fg);
       background: var(--bg);
       line-height: 1.6;
     }
 
-    /* Sichtbare, gut erkennbare Fokuszustände */
     :focus-visible {
       outline: 3px solid var(--focus);
       outline-offset: 2px;
     }
 
-    /* Skiplink */
     .skip-link {
       position: absolute;
       left: -9999px;
@@ -99,13 +96,15 @@
     }
     .controls button {
       border: 2px solid var(--border);
-      background: #fff0;
-      color: var(--fg);
-      padding: .4rem .7rem;
-      border-radius: .6rem;
+      background: var(--brand);
+      color: #fff;
+      padding: .5rem 1rem;
+      border-radius: var(--radius);
       cursor: pointer;
+      font-weight: 600;
+      transition: background .2s ease;
     }
-    .controls button:hover { background: var(--surface); }
+    .controls button:hover { background: var(--brand-contrast); }
 
     .hero {
       padding: var(--space-8) var(--space-4);
@@ -131,19 +130,29 @@
 
     .resources li { margin-bottom: .25rem; }
 
-    /* Tabellenbeispiel */
     table { width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid var(--border); padding: .5rem .6rem; text-align: left; }
     th { background: var(--surface); }
 
-    /* Formulare */
     .form-field { margin-bottom: 1rem; }
     label { display: inline-block; margin-bottom: .25rem; font-weight: 600; }
     input, textarea, select { width: 100%; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--bg); color: var(--fg); }
     .hint { font-size: .95rem; color: var(--muted); }
     .error { color: #a40000; }
 
-    /* Bewegungsreduktion respektieren */
+    button[type="submit"] {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: .7rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    button[type="submit"]:hover { background: var(--brand-contrast); }
+
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
     }
@@ -190,7 +199,7 @@
         </article>
         <article class="card" role="listitem">
           <h3>Recht & Normen</h3>
-          <p>In der EU greifen u.a. <abbr title="Web Content Accessibility Guidelines">WCAG</abbr> und das <abbr title="European Accessibility Act">EAA</abbr> (EU‑Richtlinie). Diese Vorlage hilft bei der Umsetzung.</p>
+          <p>In der EU greifen u.a. <abbr title="Web Content Accessibility Guidelines">WCAG</abbr> und das <abbr title="European Accessibility Act">EAA</abbr>.</p>
         </article>
         <article class="card" role="listitem">
           <h3>Nutzen für alle</h3>
@@ -281,10 +290,8 @@
   </footer>
 
   <script>
-    // Jahr automatisch
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Schriftgröße steuern (persistiert in localStorage)
     const root = document.documentElement;
     const getSize = () => parseFloat(getComputedStyle(root).fontSize);
     const setSize = (px) => { root.style.fontSize = px + 'px'; localStorage.setItem('fontSize', String(px)); };
@@ -294,7 +301,6 @@
     document.getElementById('fontInc').addEventListener('click', () => setSize(Math.min(getSize() + 2, 28)));
     document.getElementById('fontDec').addEventListener('click', () => setSize(Math.max(getSize() - 2, 14)));
 
-    // Kontrast umschalten (persistiert)
     const toggle = document.getElementById('contrastToggle');
     const applyTheme = (high) => {
       document.body.setAttribute('data-theme', high ? 'high-contrast' : '');
@@ -309,7 +315,6 @@
       applyTheme(!active);
     });
 
-    // Einfache Live-Validierung
     const form = document.querySelector('form');
     const errors = document.getElementById('formErrors');
     function showErrors(list){
