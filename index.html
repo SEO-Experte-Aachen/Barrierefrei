@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Eine barrierearme Beispiel-Webseite nach WCAG mit guter Tastaturbedienbarkeit, Kontrast- und Schriftgrößen-Schalter." />
+  <title>Barrierefreiheit – Beispielseite</title>
+
+  <style>
+    /* ===== Basistypografie & Design-Tokens ===== */
+    :root {
+      --bg: #ffffff;
+      --fg: #1a1a1a;
+      --muted: #444;
+      --brand: #0f62fe; /* blau */
+      --brand-contrast: #083a9b;
+      --accent: #0fa; /* Akzent für Hinweise */
+      --surface: #f6f7f8;
+      --border: #d9dadd;
+      --focus: #ffbf47; /* GOV.UK-ähnlicher Fokusrahmen */
+      --link: #0b69ff;
+      --link-visited: #6f42c1;
+
+      --radius: 14px;
+      --space-1: .25rem;
+      --space-2: .5rem;
+      --space-3: .75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+
+      --font-size: 18px; /* dynamisch veränderbar */
+      --maxw: 72ch;
+    }
+
+    [data-theme="high-contrast"] {
+      --bg: #000;
+      --fg: #fff;
+      --muted: #e6e6e6;
+      --brand: #ffd300;
+      --brand-contrast: #c7a600;
+      --surface: #111;
+      --border: #333;
+      --link: #80b3ff;
+      --link-visited: #ff80ff;
+      --focus: #ffbf47;
+    }
+
+    html { font-size: var(--font-size); }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    /* Sichtbare, gut erkennbare Fokuszustände */
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Skiplink */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+    }
+    .skip-link:focus {
+      left: 1rem;
+      top: 1rem;
+      background: var(--focus);
+      color: #000;
+      padding: .5rem .75rem;
+      border-radius: .5rem;
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .wrap {
+      max-width: var(--maxw);
+      margin-inline: auto;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    nav ul { display: flex; gap: var(--space-4); padding: 0; margin: 0; list-style: none; }
+    nav a { color: var(--fg); text-decoration: underline; text-underline-offset: .2em; }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      align-items: center;
+    }
+    .controls button {
+      border: 2px solid var(--border);
+      background: #fff0;
+      color: var(--fg);
+      padding: .4rem .7rem;
+      border-radius: .6rem;
+      cursor: pointer;
+    }
+    .controls button:hover { background: var(--surface); }
+
+    .hero {
+      padding: var(--space-8) var(--space-4);
+      background: linear-gradient(180deg, var(--surface), transparent 60%);
+    }
+    .hero h1 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); margin: 0 0 .25rem; }
+    .hero p { color: var(--muted); margin: 0; }
+
+    main section { padding-block: var(--space-8); border-top: 1px solid var(--border); }
+    h2 { font-size: 1.4rem; margin-top: 0; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-4);
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-6);
+      background: var(--surface);
+    }
+
+    .resources li { margin-bottom: .25rem; }
+
+    /* Tabellenbeispiel */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--border); padding: .5rem .6rem; text-align: left; }
+    th { background: var(--surface); }
+
+    /* Formulare */
+    .form-field { margin-bottom: 1rem; }
+    label { display: inline-block; margin-bottom: .25rem; font-weight: 600; }
+    input, textarea, select { width: 100%; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--bg); color: var(--fg); }
+    .hint { font-size: .95rem; color: var(--muted); }
+    .error { color: #a40000; }
+
+    /* Bewegungsreduktion respektieren */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header role="banner">
+    <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+      <div>
+        <a href="#" aria-current="page" style="text-decoration:none; color:inherit; font-weight:700">Barrierefreiheit</a>
+      </div>
+      <nav aria-label="Hauptnavigation">
+        <ul>
+          <li><a href="#warum">Warum?</a></li>
+          <li><a href="#checkliste">Checkliste</a></li>
+          <li><a href="#ressourcen">Ressourcen</a></li>
+          <li><a href="#kontakt">Kontakt</a></li>
+        </ul>
+      </nav>
+      <div class="controls" aria-label="Darstellung anpassen">
+        <button id="fontDec" type="button" aria-label="Schrift verkleinern">A−</button>
+        <button id="fontInc" type="button" aria-label="Schrift vergrößern">A+</button>
+        <button id="contrastToggle" type="button" aria-pressed="false" aria-label="Kontrast umschalten">Kontrast</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>Digitale Barrierefreiheit – verständlich & umsetzbar</h1>
+      <p>Eine kompakte, zugängliche Vorlage mit guten Standards (WCAG 2.2) für dein nächstes Projekt.</p>
+    </div>
+  </div>
+
+  <main id="main" tabindex="-1">
+    <section id="warum" class="wrap">
+      <h2>Warum Barrierefreiheit?</h2>
+      <div class="card-grid" role="list">
+        <article class="card" role="listitem">
+          <h3>Inklusion</h3>
+          <p>Alle Menschen sollen Inhalte nutzen können – unabhängig von Fähigkeiten, Geräten oder Umgebung.</p>
+        </article>
+        <article class="card" role="listitem">
+          <h3>Recht & Normen</h3>
+          <p>In der EU greifen u.a. <abbr title="Web Content Accessibility Guidelines">WCAG</abbr> und das <abbr title="European Accessibility Act">EAA</abbr> (EU‑Richtlinie). Diese Vorlage hilft bei der Umsetzung.</p>
+        </article>
+        <article class="card" role="listitem">
+          <h3>Nutzen für alle</h3>
+          <p>Bessere Usability, schnellere Seiten und höhere Qualität kommen allen zugute.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="checkliste" class="wrap" aria-labelledby="checkliste-h2">
+      <h2 id="checkliste-h2">Schnell-Check (Auszug)</h2>
+      <table aria-describedby="checklist-hint">
+        <caption class="hint" id="checklist-hint">Diese kompakte Tabelle deckt zentrale WCAG‑Kriterien ab.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Kriterium</th>
+            <th scope="col">Ziel</th>
+            <th scope="col">Erfüllt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Tastaturbedienbar</th>
+            <td>Alle Funktionen ohne Maus nutzbar</td>
+            <td><input type="checkbox" aria-label="Tastaturbedienbar erfüllt"></td>
+          </tr>
+          <tr>
+            <th scope="row">Kontraste ≥ 4.5:1</th>
+            <td>Text ist gut lesbar</td>
+            <td><input type="checkbox" aria-label="Kontraste erfüllt"></td>
+          </tr>
+          <tr>
+            <th scope="row">Alt‑Texte</th>
+            <td>Bilder mit aussagekräftigen Alternativtexten</td>
+            <td><input type="checkbox" aria-label="Alt-Texte erfüllt"></td>
+          </tr>
+          <tr>
+            <th scope="row">Struktur</th>
+            <td>Überschriften, Listen, Landmarks</td>
+            <td><input type="checkbox" aria-label="Struktur erfüllt"></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="ressourcen" class="wrap">
+      <h2>Weiterführende Ressourcen</h2>
+      <ul class="resources">
+        <li><a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener">WCAG – Web Content Accessibility Guidelines</a></li>
+        <li><a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank" rel="noopener">WAI‑ARIA Authoring Practices</a></li>
+        <li><a href="https://bitvtest.de/" target="_blank" rel="noopener">BITV‑Test (Deutschland)</a></li>
+      </ul>
+    </section>
+
+    <section id="kontakt" class="wrap" aria-labelledby="kontakt-h2">
+      <h2 id="kontakt-h2">Kontaktformular (Beispiel)</h2>
+      <p class="hint" id="kontakt-hint">Alle Felder sind Pflichtfelder. Fehlermeldungen erscheinen live.</p>
+
+      <form aria-describedby="kontakt-hint" novalidate>
+        <div class="form-field">
+          <label for="name">Name</label>
+          <input id="name" name="name" required autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <label for="email">E‑Mail</label>
+          <input id="email" name="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="anliegen">Anliegen</label>
+          <select id="anliegen" name="anliegen" required>
+            <option value="">Bitte wählen …</option>
+            <option>Allgemeine Frage</option>
+            <option>Barriere melden</option>
+            <option>Beratung</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="nachricht">Nachricht</label>
+          <textarea id="nachricht" name="nachricht" rows="5" required></textarea>
+        </div>
+        <div aria-live="polite" class="error" id="formErrors"></div>
+        <button type="submit">Senden</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="wrap" role="contentinfo">
+    <p>© <span id="year"></span> Beispielseite zur Barrierefreiheit · <a href="#">Impressum</a></p>
+  </footer>
+
+  <script>
+    // Jahr automatisch
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Schriftgröße steuern (persistiert in localStorage)
+    const root = document.documentElement;
+    const getSize = () => parseFloat(getComputedStyle(root).fontSize);
+    const setSize = (px) => { root.style.fontSize = px + 'px'; localStorage.setItem('fontSize', String(px)); };
+    const savedSize = parseFloat(localStorage.getItem('fontSize'));
+    if (!Number.isNaN(savedSize) && savedSize) setSize(savedSize);
+
+    document.getElementById('fontInc').addEventListener('click', () => setSize(Math.min(getSize() + 2, 28)));
+    document.getElementById('fontDec').addEventListener('click', () => setSize(Math.max(getSize() - 2, 14)));
+
+    // Kontrast umschalten (persistiert)
+    const toggle = document.getElementById('contrastToggle');
+    const applyTheme = (high) => {
+      document.body.setAttribute('data-theme', high ? 'high-contrast' : '');
+      toggle.setAttribute('aria-pressed', String(high));
+      localStorage.setItem('highContrast', String(high));
+    };
+    const savedContrast = localStorage.getItem('highContrast');
+    if (savedContrast) applyTheme(savedContrast === 'true');
+
+    toggle.addEventListener('click', () => {
+      const active = toggle.getAttribute('aria-pressed') === 'true';
+      applyTheme(!active);
+    });
+
+    // Einfache Live-Validierung
+    const form = document.querySelector('form');
+    const errors = document.getElementById('formErrors');
+    function showErrors(list){
+      if (!list.length) { errors.textContent = ''; return; }
+      const ul = document.createElement('ul');
+      list.forEach(msg => { const li = document.createElement('li'); li.textContent = msg; ul.appendChild(li); });
+      errors.innerHTML = '';
+      errors.appendChild(ul);
+    }
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const messages = [];
+      const name = document.getElementById('name');
+      const email = document.getElementById('email');
+      const anliegen = document.getElementById('anliegen');
+      const nachricht = document.getElementById('nachricht');
+
+      if (!name.value.trim()) messages.push('Bitte Name angeben.');
+      if (!email.value.trim()) messages.push('Bitte E‑Mail angeben.');
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) messages.push('Bitte eine gültige E‑Mail eingeben.');
+      if (!anliegen.value) messages.push('Bitte ein Anliegen wählen.');
+      if (!nachricht.value.trim()) messages.push('Bitte eine Nachricht eingeben.');
+
+      showErrors(messages);
+      if (!messages.length) {
+        form.reset();
+        showErrors([]);
+        alert('Danke! Ihre Nachricht wurde als Demo lokal geprüft.');
+      }
+    });
+  </script>
+</body>
+</html>
